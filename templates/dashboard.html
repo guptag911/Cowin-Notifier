@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covid Vaccine Reminder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.min.css" integrity="sha512-byErQdWdTqREz6DLAA9pCnLbdoGGhXfU6gm1c8bkf7F51JVmUBlayGe2A31VpXWQP+eiJ3ilTAZHCR3vmMyybA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+</head>
+<body style="background-color: whitesmoke;">
+    <div id="app">
+        <section class="hero is-small is-primary">
+            <div class="hero-body">
+              <span class="title">
+                Covid Vaccine Notifier
+              </span>
+              <button v-if="showSlots" class="button is-primary is-light" style="right: 8px; position: absolute;" @click="goBack()"><span class="icon is-small is-left" style="padding-right: 18px;">
+                <i class="fas fa-arrow-circle-left"></i>
+              </span>Back</button>
+            </div>
+        </section>
+        <div class="content box" style="width: 50%; margin: auto; margin-top: 2%; margin-bottom: 2%;" v-if="!showSlots">
+            <div class="notification is-danger" v-if="showAlert">
+                <button class="delete" @click="showAlert = false"></button>
+                [[alertMsg]]
+            </div>
+            <div>
+                <div class="field">
+                    <label class="label">First Name</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="First Name" v-model="info.fname">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Last Name</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Last name" v-model="info.lname">
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label">Age<span style="color: red;">*</span></label>
+                    <div class="control">
+                        <input class="input" type="number" placeholder="Age" v-model="info.age" required >
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label">Dose Type<span style="color: red;">*</span></label>
+                    <div class="control">
+                        <label>
+                          <button id="d1" class="button is-light" @click="changeDose('1')">Dose 1</button>
+                        </label>
+                        <label>
+                            <button id="d2" class="button is-light" @click="changeDose('2')">Dose 2</button>
+                        </label>
+                      </div>
+                </div>
+                <div class="field">
+                    <label class="label">Area Pincode<span style="color: red;">*</span></label>
+                    <div class="control">
+                        <input class="input" type="number" placeholder="ZipCode of your area" v-model="info.pin" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                    <button class="button is-primary is-active" @click="submit()">Submit</button>
+                    </div>
+                </div>
+            </div>    
+        </div>
+        <div class="content box" style="width: 75%; margin: auto; margin-top: 2%; margin-bottom: 2%;" v-else>
+            <h4 style="text-align: center;">Do not refresh this page.</h4>
+            <hr>
+            <p>Showing Available Slots of Dose[[ info.dose]] for age group [[ minAge ]]+.</p>
+            <p>It is highly recommended to open <a href="https://www.cowin.gov.in/home" target="_blank">COWIN Portal</a> in other tab for booking purpose.</p>
+            <div v-if="slotsToShow.length>0">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>S. No.</th>
+                            <th>Vaccine Center</th>
+                            <th>Vaccine Name</th>
+                            <th>Dose Available</th>
+                            <th>Center's Address</th>
+                        </tr>
+                    </thead>
+                    <tr v-for="(slot, index) in slotsToShow">
+                        <td>[[ index + 1]]</td>
+                        <td>[[ slot.name ]]</td>
+                        <td>[[ slot.vaccine]]</td>
+                        <td>[[ slot.capacity ]]</td>
+                        <td>[[ slot.address ]]</td>
+                    </tr>
+                </table>
+            </div>
+            <div v-else>
+                <h3 class="title is-4" style="text-align: center; color: #f14646d4;">There are no available slots yet!</h3>
+            </div>
+        </div>
+    </div>
+    <footer class="footer" style="background-color: #00d1b2">
+        <div class="content has-text-centered" style="color: #fff; font-weight: 500;">
+          <p>
+            Made with &#10084; by <a href="https://www.linkedin.com/in/guptag911" target="_blank" style="color: white;">Abhay Gupta</a>
+          </p>
+        </div>
+      </footer>
+    <script src="{% static 'js/index.js' %}"></script>
+</body>
+</html>
